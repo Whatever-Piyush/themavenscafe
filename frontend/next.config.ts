@@ -91,6 +91,7 @@ function securityHeaders() {
 }
 
 const nextConfig: NextConfig = {
+  output: "export",
   reactStrictMode: true,
 
   // Advertising the exact framework is free reconnaissance, and there is no
