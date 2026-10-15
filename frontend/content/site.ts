@@ -45,6 +45,18 @@ export interface OpeningHours {
   closes: string;
 }
 
+/** See the `url` field below for why the order is what it is. */
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit.replace(/\/$/, '');
+
+  // Netlify provides this on every build.
+  const netlify = process.env.URL;
+  if (netlify) return netlify.replace(/\/$/, '');
+
+  return 'http://localhost:3000';
+}
+
 export const site = {
   /** Official name. Used in metadata, titles and structured data. */
   name: 'The Mavens Cafe',
@@ -64,7 +76,27 @@ export const site = {
   /** The one location fact we have been given. */
   location: 'Chirawa, Rajasthan, India',
 
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://themavenscafe.vercel.app',
+  /**
+   * Canonical site URL — used for metadataBase, Open Graph, canonical links,
+   * sitemap.xml, robots.txt and JSON-LD.
+   *
+   * Resolved at BUILD time, which is the only time that exists in a static
+   * export. Read in that order:
+   *
+   *   1. NEXT_PUBLIC_SITE_URL — set this explicitly once a custom domain is
+   *      attached. It wins over everything.
+   *   2. URL — set automatically by Netlify to the live site URL, so a Netlify
+   *      build produces correct canonicals with no configuration at all.
+   *   3. localhost — a local build genuinely IS localhost, so saying so is
+   *      more honest than hard-coding somebody else's production domain.
+   *
+   * Note this value is only ever consumed server-side (metadata, sitemap,
+   * robots, structured data). `site` is also imported by a client component for
+   * its name/nav, and non-NEXT_PUBLIC_ variables are not inlined into client
+   * bundles — so do not start rendering `site.url` in client code without
+   * moving this resolution behind a NEXT_PUBLIC_ variable first.
+   */
+  url: resolveSiteUrl(),
   locale: 'en_IN',
 
   /**

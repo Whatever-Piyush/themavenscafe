@@ -1,6 +1,12 @@
 import type { MetadataRoute } from 'next';
 import { site } from '@/content/site';
 
+/**
+ * Required by `output: 'export'` — see the matching note in robots.ts.
+ * Generates sitemap.xml once at build time as a static file.
+ */
+export const dynamic = 'force-static';
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 

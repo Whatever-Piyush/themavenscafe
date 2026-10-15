@@ -1,0 +1,102 @@
+# Netlify configuration — The Mavens Cafe
+#
+# The site is a static export (`output: 'export'` in frontend/next.config.ts).
+# There is no server in production, so security headers are the host's job and
+# live here rather than in Next config, where they would be silently dropped.
+
+[build]
+  # Base is the REPOSITORY ROOT, not frontend/ — and that is deliberate.
+  #
+  # This is an npm workspaces monorepo: the lockfile lives at the root and
+  # `frontend/package.json` depends on `@mavens/backend`, which resolves only
+  # through the workspace. Pointing base at frontend/ makes Netlify run
+  # `npm install` there, where npm cannot see the workspace and tries the public
+  # registry instead. Verified, not assumed — it fails with:
+  #
+  #     npm error 404 '@mavens/backend@*' is not in this registry.
+  #
+  # Installing from the root keeps the lockfile authoritative and the build
+  # reproducible. The root `build` script delegates to the frontend workspace,
+  # so the Next build still runs with frontend/ as its working directory and
+  # still writes to frontend/out.
+  base    = "."
+  command = "npm run build"
+  publish = "frontend/out"
+
+[build.environment]
+  # Next 16 requires Node >= 20.9; 22 is the current LTS.
+  NODE_VERSION = "22"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  SECURITY HEADERS
+#
+#  Values are carried over unchanged from the previous next.config.ts, with two
+#  unavoidable differences that are called out inline below.
+#
+#  Netlify applies these to every response it serves. Order matters only in
+#  that more specific paths override less specific ones.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    # CSP — identical to the previous production policy.
+    #
+    # DIFFERENCE 1 OF 2: this is the PRODUCTION policy only. The old config
+    # added 'unsafe-eval' when NODE_ENV !== 'production' for React's dev
+    # tooling. That conditional still exists for `next dev`, which serves its
+    # own headers locally; a static host has no notion of a dev build, so only
+    # the hardened policy ships. This is strictly an improvement.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
+
+    # Stops the browser second-guessing our Content-Type.
+    X-Content-Type-Options = "nosniff"
+
+    # Belt and braces alongside frame-ancestors, for older browsers.
+    X-Frame-Options = "DENY"
+
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Switch off device APIs this site has no reason to touch.
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+
+    Cross-Origin-Opener-Policy = "same-origin"
+
+    X-DNS-Prefetch-Control = "off"
+
+    # HSTS. Netlify serves every site over HTTPS, so this is always correct
+    # here — unlike the Next config, which had to gate it on NODE_ENV to avoid
+    # pinning localhost to https during development.
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+
+    # DIFFERENCE 2 OF 2: `poweredByHeader: false` no longer applies, because no
+    # Next server runs. Netlify does not emit X-Powered-By, so the outcome is
+    # the same — the header is simply absent for a different reason.
+
+
+# Immutable assets — content-hashed filenames, safe to cache forever.
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Self-hosted fonts are also content-hashed by next/font.
+[[headers]]
+  for = "/_next/static/media/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  NO REDIRECT RULES
+#
+#  Deliberately none. A catch-all SPA rewrite (/* -> /index.html) is the usual
+#  reflex for static hosts, and it would be wrong here: this is a
+#  multi-page export where every route is a real HTML file, and a catch-all
+#  would serve the home page for genuine 404s — breaking Next's 404.html and
+#  telling search engines that every mistyped URL is valid content.
+#
+#  Netlify serves out/404.html for unmatched paths automatically.
+# ─────────────────────────────────────────────────────────────────────────────
