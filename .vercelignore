@@ -1,0 +1,13 @@
+# Reference material — NEVER deployed.
+#
+# resources/ holds the brand deck and architectural renders, including
+# third-party watermarked artwork that we do not have publishing rights to.
+# It is design reference for building the site, not site content.
+resources/
+
+# Planning documents
+THE-MAVENS-CAFE-WEBSITE-PLAN.md
+
+# Local noise
+.DS_Store
+*.log

@@ -1,0 +1,19 @@
+{
+  "name": "@mavens/backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server-side logic for The Mavens Cafe. Deliberately almost empty in V1 — the site has no dynamic functionality yet. Contains zero React and zero Next.js imports.",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

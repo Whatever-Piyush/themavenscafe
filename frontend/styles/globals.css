@@ -1,0 +1,322 @@
+@import 'tailwindcss';
+
+/* Explicit source paths.
+   Tailwind v4 auto-detects sources relative to this file, and this stylesheet
+   lives in styles/ rather than app/ — so the directories it must scan are
+   named outright instead of relying on the default walk finding them. */
+@source '../app';
+@source '../components';
+@source '../content';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE MAVENS CAFE — DESIGN TOKENS
+
+   The four core colours are taken verbatim from the brand board. Everything
+   else is derived from them. Changing a brand colour means changing it here,
+   once, and nowhere else.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Core palette (from the brand board) ──────────────────────────────── */
+  --color-maroon: #6b1e2e;
+  --color-espresso: #2b1a17;
+  --color-gold: #d4b483;
+  --color-cream: #f8f4ee;
+
+  /* ── Derived ─────────────────────────────────────────────────────────── */
+  --color-maroon-deep: #4a1420;
+  --color-maroon-soft: #8a2a3c;
+  --color-cream-deep: #efe6d9;
+  --color-sand: #e3d5c0;
+  --color-ink-muted: #6f6056;
+  --color-cream-muted: #d8cfc4;
+  --color-terracotta: #c06a52;
+
+  /* ── Typography ──────────────────────────────────────────────────────── */
+  --font-display: var(--font-playfair), 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-script: var(--font-great-vibes), 'Great Vibes', cursive;
+
+  /* Fluid type scale — 1.25 ratio, clamped between mobile and desktop so no
+     breakpoint-specific font sizes are ever needed. */
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --text-sm: clamp(0.875rem, 0.85rem + 0.15vw, 0.9375rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --text-lg: clamp(1.125rem, 1.06rem + 0.32vw, 1.3125rem);
+  --text-xl: clamp(1.375rem, 1.26rem + 0.55vw, 1.75rem);
+  --text-2xl: clamp(1.75rem, 1.52rem + 1.1vw, 2.5rem);
+  --text-3xl: clamp(2.25rem, 1.85rem + 1.9vw, 3.75rem);
+  --text-4xl: clamp(2.75rem, 2rem + 3.5vw, 5.5rem);
+
+  /* ── Motion ──────────────────────────────────────────────────────────── */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Elevation — warm-tinted, never neutral grey ─────────────────────── */
+  --shadow-soft: 0 2px 12px rgb(43 26 23 / 0.06);
+  --shadow-lift: 0 12px 32px -8px rgb(43 26 23 / 0.14);
+  --shadow-glow: 0 0 48px -8px rgb(212 180 131 / 0.45);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Clears the fixed header when jumping to an anchor. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+
+    /* Safety net against horizontal scroll from a decorative element that sits
+       slightly outside its parent.
+       `clip` rather than `hidden` on purpose: `overflow-x: hidden` silently
+       breaks `position: sticky` on descendants, which would take out the menu
+       page's sticky filter bar. */
+    overflow-x: clip;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-espresso);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* The hero is maroon and sits at the top; this stops a white flash behind
+       it when the page is over-scrolled upward on iOS. */
+    overscroll-behavior-y: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible, on-brand focus ring. Never removed — only restyled, and only for
+     pointer users who are not keyboard-navigating. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-maroon);
+    color: var(--color-cream);
+  }
+
+  img,
+  picture,
+  video,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BRAND UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  /* The letter-spaced small caps used throughout the brand:
+     CAFÉ · BAKERY · DESSERTS */
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .font-script {
+    font-family: var(--font-script);
+  }
+
+  /* Vertical fluting, lifted from the wall panelling in the cafe. */
+  .texture-fluted {
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0 7px,
+      rgb(107 30 46 / 0.045) 7px 8px
+    );
+  }
+
+  .texture-fluted-light {
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0 7px,
+      rgb(248 244 238 / 0.05) 7px 8px
+    );
+  }
+
+  /* The warm pool of light under the pendant lamps. */
+  .glow-warm {
+    background-image: radial-gradient(ellipse 60% 50% at 50% 0%, rgb(212 180 131 / 0.22), transparent 70%);
+  }
+
+  /* The arch motif — used to mask images and cap cards. */
+  .mask-arch {
+    border-radius: 50vw 50vw 0.75rem 0.75rem / 38% 38% 0.75rem 0.75rem;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENTRANCE ANIMATIONS
+
+   Pure CSS keyframes rather than a JS animation library. They run before
+   hydration, cost nothing in bundle size, and are switched off wholesale by the
+   reduced-motion block below.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mark-settle {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scroll-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(0.4rem);
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  .animate-fade-up {
+    animation: fade-up 0.9s var(--ease-out-soft) both;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 1.1s var(--ease-out-soft) both;
+  }
+
+  .animate-mark-settle {
+    animation: mark-settle 1.1s var(--ease-out-soft) both;
+  }
+
+  .animate-scroll-cue {
+    animation: scroll-cue 2.2s var(--ease-in-out-soft) infinite;
+  }
+
+  /* Stagger helpers — avoids an inline style attribute on every element, which
+     would otherwise need its own CSP allowance. */
+  .delay-1 {
+    animation-delay: 0.12s;
+  }
+  .delay-2 {
+    animation-delay: 0.24s;
+  }
+  .delay-3 {
+    animation-delay: 0.36s;
+  }
+  .delay-4 {
+    animation-delay: 0.48s;
+  }
+  .delay-5 {
+    animation-delay: 0.6s;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOTION — opt-out honoured globally, not per component
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRINT — a real cafe benefits from a menu that prints cleanly
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 11pt;
+  }
+
+  header,
+  footer,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 9pt;
+    color: #555;
+  }
+
+  /* Never split a menu item across two pages. */
+  .print-keep {
+    break-inside: avoid;
+  }
+}

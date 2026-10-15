@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+build/
+dist/
+.turbo/
+
+# Environment — NEVER commit real values. Only .env.example is tracked.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# Vercel
+.vercel
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Testing
+coverage/
+.nyc_output/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Reference material — intentionally NOT committed.
+#
+# resources/ holds the brand deck and architectural renders used as design
+# reference. They include third-party copyrighted artwork (watermarked renders
+# and a design firm's presentation), so they are not republished here. The
+# files stay on the local machine; .vercelignore separately keeps them out of
+# any deployment.
+resources/

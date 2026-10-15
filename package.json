@@ -1,0 +1,22 @@
+{
+  "name": "themavenscafe",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Maven's — Cafe, Bakery, Desserts. Chirawa.",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "start": "npm run start --workspace=frontend",
+    "lint": "npm run lint --workspace=frontend",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspace=backend --if-present",
+    "audit:security": "npm audit --audit-level=moderate"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
