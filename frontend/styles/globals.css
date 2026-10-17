@@ -24,6 +24,10 @@
   --color-cream: #f8f4ee;
 
   /* ── Derived ─────────────────────────────────────────────────────────── */
+  /* The cream-gold the signage lettering and logo mark are actually set in —
+     brighter than --gold, which stays the accent for rules and hairlines. */
+  --color-gold-light: #f0debe;
+
   --color-maroon-deep: #4a1420;
   --color-maroon-soft: #8a2a3c;
   --color-cream-deep: #efe6d9;
@@ -173,6 +177,47 @@
   /* The warm pool of light under the pendant lamps. */
   .glow-warm {
     background-image: radial-gradient(ellipse 60% 50% at 50% 0%, rgb(212 180 131 / 0.22), transparent 70%);
+  }
+
+  /**
+   * The logo mark, driven as a CSS mask rather than an <img>.
+   *
+   * The artwork is a single-colour PNG lifted from the signage, and the site
+   * needs it in cream-gold on maroon AND in maroon on cream. Masking paints
+   * `background-color` through the PNG's alpha channel, so one asset takes any
+   * colour and every call site keeps using ordinary `text-*` classes via
+   * `bg-current` — no second colour variant to generate, and no chance of the
+   * two drifting apart.
+   *
+   * Pair with `bg-current` and an explicit height; the aspect ratio holds the
+   * width so the mark cannot be squashed.
+   */
+  .mask-cup-mark {
+    aspect-ratio: 210 / 239;
+  }
+
+  /**
+   * The paint is applied only where masking is actually supported.
+   *
+   * `background-color` lives inside the @supports guard on purpose: if the mask
+   * does not apply, the colour would otherwise fill the whole box and render a
+   * solid coloured rectangle where the logo should be. Failing to invisible is
+   * the better of the two bad outcomes, and modern browsers all support this
+   * anyway — the guard is for the long tail.
+   */
+  @supports (mask-image: url('/images/brand/cup-mark.png')) or
+    (-webkit-mask-image: url('/images/brand/cup-mark.png')) {
+    .mask-cup-mark {
+      background-color: currentColor;
+      -webkit-mask-image: url('/images/brand/cup-mark.png');
+      mask-image: url('/images/brand/cup-mark.png');
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+    }
   }
 
   /* The arch motif — used to mask images and cap cards. */

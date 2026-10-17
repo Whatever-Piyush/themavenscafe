@@ -1,5 +1,5 @@
-import { ClockIcon, InstagramIcon, MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from './Icons';
-import { formatTime, resolve, site } from '@/content/site';
+import { ClockIcon, GlobeIcon, InstagramIcon, MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from './Icons';
+import { formatTime, formattedAddress, hoursSummary, resolve, site } from '@/content/site';
 import { copy } from '@/content/copy';
 import { cn } from '@/lib/cn';
 
@@ -28,12 +28,13 @@ function buildChannels(): Channel[] {
   const instagramHandle = resolve(site.contact.instagramHandle);
   const email = resolve(site.contact.email);
   const maps = resolve(site.contact.maps);
-  const address = resolve(site.contact.address);
+  const website = resolve(site.contact.website);
 
   return [
     {
       label: copy.contact.labels.address,
-      value: address ?? site.location,
+      // Falls back to the locality alone while the street line is pending.
+      value: formattedAddress() ?? site.location,
       href: maps,
       external: true,
       Icon: MapPinIcon,
@@ -66,11 +67,19 @@ function buildChannels(): Channel[] {
       external: false,
       Icon: MailIcon,
     },
+    {
+      label: copy.contact.labels.website,
+      value: website,
+      href: website ? `https://${website}` : null,
+      external: true,
+      Icon: GlobeIcon,
+    },
   ];
 }
 
 export function ContactDetails({ className }: { className?: string }) {
   const channels = buildChannels();
+  const summary = hoursSummary();
 
   return (
     <div className={cn('space-y-10', className)}>
@@ -108,6 +117,11 @@ export function ContactDetails({ className }: { className?: string }) {
             <dd className="mt-1.5">
               {site.hours.length === 0 ? (
                 <span className="italic text-ink-muted/70">{copy.contact.comingSoon}</span>
+              ) : summary ? (
+                <span className="text-espresso">
+                  {summary.label} &middot;{' '}
+                  <span className="font-medium tabular-nums">{summary.range}</span>
+                </span>
               ) : (
                 <ul className="max-w-xs space-y-2">
                   {site.hours.map((entry) => (

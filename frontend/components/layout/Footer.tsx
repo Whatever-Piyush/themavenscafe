@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { InstagramIcon, MailIcon, PhoneIcon, WhatsAppIcon } from '@/components/ui/Icons';
-import { formatTime, resolve, site } from '@/content/site';
+import { formatTime, formattedAddress, hoursSummary, resolve, site } from '@/content/site';
 
 /**
  * Footer — maroon, bookending the maroon hero.
@@ -18,13 +18,13 @@ import { formatTime, resolve, site } from '@/content/site';
 export function Footer() {
   const year = new Date().getFullYear();
 
-  const address = resolve(site.contact.address);
   const phone = resolve(site.contact.phone);
   const phoneHref = resolve(site.contact.phoneHref);
   const whatsapp = resolve(site.contact.whatsapp);
   const instagram = resolve(site.contact.instagram);
   const instagramHandle = resolve(site.contact.instagramHandle);
   const email = resolve(site.contact.email);
+  const summary = hoursSummary();
 
   const channels = [
     phoneHref && phone ? { href: phoneHref, label: phone, Icon: PhoneIcon, external: false } : null,
@@ -50,7 +50,7 @@ export function Footer() {
           <div>
             <h2 className="eyebrow mb-5 text-gold">Find us</h2>
             <address className="space-y-3 text-sm not-italic leading-relaxed text-cream-muted">
-              <p>{address ?? site.location}</p>
+              <p>{formattedAddress() ?? site.location}</p>
 
               {channels.length > 0 ? (
                 <ul className="space-y-2.5 pt-1">
@@ -76,7 +76,12 @@ export function Footer() {
           {/* Hours */}
           <div>
             <h2 className="eyebrow mb-5 text-gold">Hours</h2>
-            {site.hours.length > 0 ? (
+            {summary ? (
+              <div className="text-sm text-cream-muted">
+                <p>{summary.label}</p>
+                <p className="mt-1 tabular-nums text-cream">{summary.range}</p>
+              </div>
+            ) : site.hours.length > 0 ? (
               <dl className="space-y-2 text-sm text-cream-muted">
                 {site.hours.map((entry) => (
                   <div key={entry.day} className="flex justify-between gap-4">

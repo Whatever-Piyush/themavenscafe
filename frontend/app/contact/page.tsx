@@ -10,7 +10,7 @@ import { hasAnyContactDetail, resolve, site } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'Visit Us',
-  description: 'Find The Mavens Cafe in Chirawa, Rajasthan — café, bakery and desserts.',
+  description: 'Find The Maven’s in Chirawa, Rajasthan — café, bakery and desserts.',
   alternates: { canonical: '/contact' },
 };
 

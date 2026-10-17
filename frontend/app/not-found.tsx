@@ -15,9 +15,7 @@ export default function NotFound() {
       <div className="glow-warm pointer-events-none absolute inset-0" aria-hidden="true" />
 
       <Container className="relative text-center">
-        <span className="mx-auto block h-16 w-16 text-gold">
-          <CupMark />
-        </span>
+        <CupMark className="mx-auto h-16 text-gold-light" />
 
         <p className="eyebrow mt-8 text-gold/80">{copy.notFound.eyebrow}</p>
 

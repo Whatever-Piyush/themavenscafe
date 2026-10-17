@@ -5,7 +5,7 @@ import { site } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'Terms',
-  description: 'Terms of use for The Mavens Cafe website.',
+  description: 'Terms of use for The Maven’s website.',
   alternates: { canonical: '/terms' },
 };
 
@@ -48,7 +48,8 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-2xl text-espresso">Our content</h2>
             <p className="mt-4">
-              The {site.name} name, logo, photography and written content on this site belong to us. Please do not
+              {/* No article before {site.name} — the name already begins with "The". */}
+              {site.name} name, logo, photography and written content on this site belong to us. Please do not
               reproduce them commercially without asking first. You are of course welcome to share a link, or to
               post your own photographs of your visit.
             </p>

@@ -30,6 +30,8 @@ export function cafeSchema(): Record<string, unknown> {
   const email = resolve(site.contact.email);
   const address = resolve(site.contact.address);
   const instagram = resolve(site.contact.instagram);
+  const website = resolve(site.contact.website);
+  const maps = resolve(site.contact.maps);
 
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -55,14 +57,45 @@ export function cafeSchema(): Record<string, unknown> {
 
   if (phone) schema.telephone = phone;
   if (email) schema.email = email;
-  if (instagram) schema.sameAs = [instagram];
 
+  /**
+   * sameAs links the website to the same business elsewhere on the web, which
+   * is how search engines reconcile the two into one entity. The official
+   * domain belongs here alongside the social profile.
+   */
+  const sameAs = [instagram, website ? `https://${website}` : null].filter(
+    (value): value is string => value !== null,
+  );
+  if (sameAs.length > 0) schema.sameAs = sameAs;
+
+  if (maps) schema.hasMap = maps;
+
+  /**
+   * Opening hours, grouped by identical open/close pairs.
+   *
+   * schema.org allows `dayOfWeek` to be an array, so seven days on the same
+   * schedule become one specification rather than seven near-identical ones.
+   * Equally correct, markedly smaller, and easier to read when debugging in
+   * Google's Rich Results Test.
+   */
   if (site.hours.length > 0) {
-    schema.openingHoursSpecification = site.hours.map((hours) => ({
+    const groups = new Map<string, { opens: string; closes: string; days: string[] }>();
+
+    for (const entry of site.hours) {
+      const key = `${entry.opens}-${entry.closes}`;
+      const existing = groups.get(key);
+      if (existing) {
+        existing.days.push(entry.day);
+      } else {
+        groups.set(key, { opens: entry.opens, closes: entry.closes, days: [entry.day] });
+      }
+    }
+
+    schema.openingHoursSpecification = [...groups.values()].map((group) => ({
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: DAY_URI[hours.day] ?? hours.day,
-      opens: hours.opens,
-      closes: hours.closes,
+      dayOfWeek: group.days.map((day) => DAY_URI[day] ?? day),
+      opens: group.opens,
+      closes: group.closes,
     }));
   }
 

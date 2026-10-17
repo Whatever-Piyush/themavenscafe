@@ -58,11 +58,23 @@ function resolveSiteUrl(): string {
 }
 
 export const site = {
-  /** Official name. Used in metadata, titles and structured data. */
-  name: 'The Mavens Cafe',
+  /**
+   * Official name. Used in metadata, titles and structured data.
+   *
+   * Set with a typographic apostrophe (’, U+2019) rather than a straight quote
+   * ('), which is the correct mark for a possessive and what a premium brand
+   * should be set in.
+   *
+   * NOTE the deliberate split: the NAME carries the apostrophe, but every
+   * machine-readable IDENTIFIER stays flat — themavenscafe.in, @themavenscafe,
+   * themavenscafe@gmail.com. Apostrophes do not belong in domains, handles or
+   * email addresses, and those are not spellings of the name so much as
+   * addresses that happen to resemble it.
+   */
+  name: 'The Maven’s',
 
   /** Hero treatment — the wordmark as it is set on signage. */
-  wordmark: 'THE MAVENS',
+  wordmark: 'THE MAVEN’S',
 
   descriptor: 'Café · Bakery · Desserts',
   tagline: 'Good Food • Better Moods',
@@ -107,38 +119,69 @@ export const site = {
    * contact page, structured data.
    */
   contact: {
-    /** Full street address, including PIN code. */
-    address: pending() as string | Pending,
+    /**
+     * STREET LINE ONLY — locality, region and country are added separately.
+     *
+     * Kept apart on purpose: schema.org `addressLocality` is already "Chirawa",
+     * so repeating it here would publish "…, Chirawa, Chirawa, Rajasthan" in the
+     * structured data. Use `formattedAddress()` for anything human-facing.
+     *
+     * PIN code still to be supplied.
+     */
+    address: 'Near SBI Bank, Pilani Road' as string | Pending,
 
-    /** Display number, e.g. '+91 00000 00000'. */
-    phone: pending() as string | Pending,
+    /** Display number. */
+    phone: '+91 73758 51778' as string | Pending,
 
-    /** Dial link, e.g. 'tel:+910000000000'. */
-    phoneHref: pending() as string | Pending,
+    /** Dial link — E.164, no spaces, so every dialler parses it. */
+    phoneHref: 'tel:+917375851778' as string | Pending,
 
-    /** e.g. 'https://wa.me/910000000000' */
-    whatsapp: pending() as string | Pending,
+    /** wa.me takes the number with country code and no symbols. */
+    whatsapp: 'https://wa.me/917375851778' as string | Pending,
 
     /** Full profile URL. */
-    instagram: pending() as string | Pending,
+    instagram: 'https://instagram.com/themavenscafe' as string | Pending,
 
     /** Handle including the @. */
-    instagramHandle: pending() as string | Pending,
+    instagramHandle: '@themavenscafe' as string | Pending,
 
     /** Email address. */
-    email: pending() as string | Pending,
+    email: 'themavenscafe@gmail.com' as string | Pending,
 
-    /** Google Maps link or embed URL. */
-    maps: pending() as string | Pending,
+    /**
+     * Directions link.
+     *
+     * A Maps *search* for the address supplied, not invented coordinates — it
+     * resolves to the right street and lets Google do the matching. Replace
+     * this with the Google Business Profile share link once that profile
+     * exists; it will pin the business itself rather than the address.
+     */
+    maps: 'https://www.google.com/maps/search/?api=1&query=The+Mavens+Cafe%2C+Near+SBI+Bank%2C+Pilani+Road%2C+Chirawa%2C+Rajasthan' as string | Pending,
+
+    /** Official domain. Displayed as a contact detail. */
+    website: 'themavenscafe.in' as string | Pending,
   },
 
   /**
-   * Opening hours. An empty array renders as "Coming soon" and is omitted from
-   * structured data. Populate like:
+   * Opening hours, in 24-hour time.
    *
-   *   hours: [{ day: 'Monday', opens: '09:00', closes: '22:00' }, ...]
+   * Open daily, 9am to 10pm. Listed per day rather than as a single "daily"
+   * string because schema.org needs each weekday named, and because a future
+   * change to one day (a late Saturday, a closed Monday) should be a one-line
+   * edit rather than a restructure. `hoursSummary()` collapses them back down
+   * for display when every day matches.
+   *
+   * An empty array renders as "Coming soon" and is omitted from structured data.
    */
-  hours: [] as OpeningHours[],
+  hours: [
+    { day: 'Monday', opens: '09:00', closes: '22:00' },
+    { day: 'Tuesday', opens: '09:00', closes: '22:00' },
+    { day: 'Wednesday', opens: '09:00', closes: '22:00' },
+    { day: 'Thursday', opens: '09:00', closes: '22:00' },
+    { day: 'Friday', opens: '09:00', closes: '22:00' },
+    { day: 'Saturday', opens: '09:00', closes: '22:00' },
+    { day: 'Sunday', opens: '09:00', closes: '22:00' },
+  ] as OpeningHours[],
 
   nav: [
     { label: 'Home', href: '/' },
@@ -161,4 +204,39 @@ export function formatTime(time24: string): string {
 /** True when at least one contact channel is live. Drives the Visit section. */
 export function hasAnyContactDetail(): boolean {
   return Object.values(site.contact).some((value) => !isPending(value));
+}
+
+/**
+ * A one-line summary when every day keeps the same hours.
+ *
+ * Returns null the moment any day differs, so callers fall back to the full
+ * per-day list automatically. Seven identical rows reading "9:00 am – 10:00 pm"
+ * is noise; "Open daily · 9:00 am – 10:00 pm" is the same information and
+ * actually gets read.
+ */
+export function hoursSummary(): { label: string; range: string } | null {
+  const [first, ...rest] = site.hours;
+  if (!first) return null;
+  if (site.hours.length !== 7) return null;
+
+  const uniform = rest.every((entry) => entry.opens === first.opens && entry.closes === first.closes);
+  if (!uniform) return null;
+
+  return {
+    label: 'Open daily',
+    range: `${formatTime(first.opens)} – ${formatTime(first.closes)}`,
+  };
+}
+
+/**
+ * The full postal address on one line, for display.
+ *
+ * Composes the street line with locality and region so the stored value stays
+ * schema-correct while humans still see a complete address. Returns null while
+ * the street line is pending, so callers can fall back to the locality alone.
+ */
+export function formattedAddress(): string | null {
+  const street = resolve(site.contact.address);
+  if (!street) return null;
+  return `${street}, Chirawa, Rajasthan`;
 }

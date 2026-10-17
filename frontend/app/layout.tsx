@@ -49,7 +49,14 @@ export const metadata: Metadata = {
     'coffee Chirawa',
     'desserts Chirawa',
     'rooftop cafe Chirawa',
+    /**
+     * Both spellings on purpose. The brand is set with an apostrophe, but
+     * people type it without one — and the domain, Instagram handle and email
+     * all use the flat form. Carrying both means a search either way finds us.
+     */
+    'The Maven’s',
     'The Mavens Cafe',
+    'The Mavens',
   ],
   authors: [{ name: site.name }],
   creator: site.name,

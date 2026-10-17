@@ -102,3 +102,13 @@ export function CloseIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function GlobeIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={cn(base, className)} {...stroke}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3.5 9h17M3.5 15h17" />
+      <path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z" />
+    </svg>
+  );
+}

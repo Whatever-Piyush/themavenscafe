@@ -77,9 +77,12 @@ export function Header() {
             className="flex items-center gap-2.5 rounded-sm transition-opacity hover:opacity-80"
             aria-label={`${site.name} — home`}
           >
-            <span className={cn('block h-8 w-8 shrink-0 transition-colors', transparent ? 'text-gold' : 'text-maroon')}>
-              <CupMark />
-            </span>
+            <CupMark
+              className={cn(
+                'h-9 shrink-0 transition-colors',
+                transparent ? 'text-gold-light' : 'text-maroon',
+              )}
+            />
             <span className="flex flex-col leading-none">
               <span
                 className={cn(

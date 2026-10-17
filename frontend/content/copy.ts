@@ -67,7 +67,7 @@ export const copy = {
     },
 
     pillars: {
-      eyebrow: 'Why The Mavens',
+      eyebrow: 'Why The Maven’s',
       title: 'Premium, fresh, handcrafted — always',
       lead: 'Four words from our own counter, and the standard we hold ourselves to.',
       descriptions: {
@@ -139,6 +139,7 @@ export const copy = {
       whatsapp: 'WhatsApp',
       instagram: 'Instagram',
       email: 'Email',
+      website: 'Website',
       directions: 'Get directions',
     },
     comingSoon: 'Coming soon',
@@ -148,7 +149,7 @@ export const copy = {
      * service wired up to receive them.
      */
     noFormNote:
-      'We do not have an online enquiry form yet. When our phone and social links are live, those will be the quickest way to reach us.',
+      'We do not have an online enquiry form. Calling or messaging us on WhatsApp is the quickest way to reach us — you will get a person rather than a queue.',
   },
 
   notFound: {

@@ -1,59 +1,71 @@
+import Image from 'next/image';
 import { cn } from '@/lib/cn';
 import { site } from '@/content/site';
 
 /**
  * Brand marks.
  *
- * Built typographically from Playfair Display rather than reproducing the
- * cafe's custom-lettered logo, which exists only as raster artwork. This
- * recreates the LOCKUP — cup mark, wordmark, letter-spaced descriptor — without
- * passing itself off as the artwork.
+ * The cup-and-wheat mark is the real signage artwork, extracted from the sign
+ * photograph and used everywhere on the site — hero, header, footer, 404 and
+ * the craft cards. The wordmark beside it is set in Playfair Display, which
+ * matches the lettering's high-contrast skeleton without claiming to be the
+ * custom typeface.
  *
- * When a vector logo is supplied, replacing this one component updates the mark
- * everywhere it appears.
+ * One asset serves every position and colour: see CupMark below. If a vector
+ * logo ever arrives, swapping the file at
+ * `public/images/brand/cup-mark.png` updates the mark site-wide.
  */
 
-/** The cup, steam and wheat mark. */
+/**
+ * The cup, wheat and steam mark — the real signage artwork.
+ *
+ * Lifted from the high-resolution sign photograph: the maroon ground removed
+ * with a soft alpha ramp across the bevel so edges stay anti-aliased, the
+ * wordmark beneath it masked away, and the result flattened to a single colour.
+ *
+ * Rendered through a CSS mask rather than as an <img>, because the site needs
+ * this mark in cream-gold on maroon AND in maroon on cream. The mask paints
+ * `background-color` through the PNG's alpha, so `bg-current` picks up whatever
+ * `text-*` colour the call site sets — one asset, any colour, nothing to keep
+ * in sync.
+ *
+ * Decorative in every position: each call site pairs it with visible text, so
+ * it is hidden from assistive technology rather than announced twice.
+ *
+ * Give it a height; the aspect ratio in `.mask-cup-mark` supplies the width.
+ */
 export function CupMark({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 48 48"
-      fill="none"
-      aria-hidden="true"
-      className={cn('h-full w-full', className)}
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {/* Steam */}
-      <path d="M20 13c0-2.2 2-2.6 2-4.6S20 6 20 4" opacity="0.9" />
-      <path d="M26 13c0-2.6 2.4-3 2.4-5.4S26 4.6 26 2.4" opacity="0.75" />
-      {/* Wheat ear — the bakery half of the identity */}
-      <path d="M11 19c0-4.4 2-7.6 5-9.4" opacity="0.85" />
-      <path
-        d="M13.4 13.6c-1.6-.6-3.2-.2-4 1.2M15.6 11c-1.4-1-3-1-4.2.2M12.2 16.8c-1.8-.2-3.2.6-3.6 2.2"
-        opacity="0.85"
-      />
-      {/* Cup */}
-      <path d="M12 22h22v6a9 9 0 0 1-9 9h-4a9 9 0 0 1-9-9v-6Z" />
-      <path d="M34 24.5h2.5a4 4 0 0 1 0 8H34" />
-      {/* Saucer */}
-      <path d="M9 41h28" opacity="0.6" />
-    </svg>
-  );
+  // No `bg-current` here — the fill lives inside an @supports guard in
+  // globals.css so an unsupported mask degrades to invisible, not a solid block.
+  return <span aria-hidden="true" className={cn('mask-cup-mark block', className)} />;
 }
 
 /**
  * The hero lockup: mark, uppercase wordmark, descriptor rule.
  * Large, centred and cinematic — used once per page at most.
+ *
+ * The mark here is the ACTUAL signage artwork, not the SVG approximation used
+ * elsewhere. It was lifted from the high-resolution sign photograph, had its
+ * maroon ground removed with a soft alpha ramp across the bevel (so the edges
+ * stay anti-aliased rather than developing a halo) and was flattened to a single
+ * brand cream-gold — the photograph's own lighting gradient would have read as a
+ * pasted photo on a flat page.
+ *
+ * `alt=""` is deliberate: the mark is decorative, and the business name is
+ * already carried by the <h1> below it. Giving it alt text would make a screen
+ * reader announce the name twice.
  */
 export function HeroWordmark({ className }: { className?: string }) {
   return (
     <div className={cn('flex flex-col items-center', className)}>
-      <span className="block h-16 w-16 text-gold sm:h-20 sm:w-20">
-        <CupMark />
-      </span>
+      <Image
+        src="/images/brand/cup-mark.png"
+        alt=""
+        width={210}
+        height={239}
+        priority
+        className="h-16 w-auto sm:h-20"
+      />
 
       <h1 className="mt-6 font-display text-4xl font-medium uppercase leading-none tracking-[0.1em] text-cream sm:text-5xl md:text-6xl lg:text-7xl">
         {site.wordmark}
@@ -85,9 +97,7 @@ export function Wordmark({
 
   return (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
-      <span className={cn('block h-9 w-9 shrink-0', onCream ? 'text-maroon' : 'text-gold')}>
-        <CupMark />
-      </span>
+      <CupMark className={cn('h-9 shrink-0', onCream ? 'text-maroon' : 'text-gold-light')} />
 
       <span className="flex flex-col leading-none">
         <span

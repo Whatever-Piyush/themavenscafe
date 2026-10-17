@@ -90,9 +90,7 @@ function CraftPillars() {
       </ul>
 
       <div className="mt-14 flex flex-col items-center gap-5 text-center">
-        <span className="block h-9 w-9 text-maroon/35">
-          <CupMark />
-        </span>
+        <CupMark className="h-10 text-maroon/35" />
         <p className="max-w-md text-sm text-ink-muted">{copy.home.menuPreview.leadPending}</p>
       </div>
     </Section>

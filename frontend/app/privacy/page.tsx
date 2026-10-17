@@ -5,7 +5,7 @@ import { resolve, site } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'Privacy',
-  description: 'How The Mavens Cafe website handles your data — in short, it does not collect any.',
+  description: 'How The Maven’s website handles your data — in short, it does not collect any.',
   alternates: { canonical: '/privacy' },
   robots: { index: true, follow: true },
 };

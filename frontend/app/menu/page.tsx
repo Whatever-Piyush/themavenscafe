@@ -10,7 +10,7 @@ import { isMenuPending } from '@/content/menu';
 export const metadata: Metadata = {
   title: 'Menu',
   description:
-    'Café, bakery and desserts at The Mavens Cafe in Chirawa — coffee, fresh baking and desserts made on the premises.',
+    'Café, bakery and desserts at The Maven’s in Chirawa — coffee, fresh baking and desserts made on the premises.',
   alternates: { canonical: '/menu' },
 };
 
