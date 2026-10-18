@@ -46,22 +46,104 @@ export const GALLERY_CATEGORIES: { id: GalleryCategory; label: string }[] = [
 
 export interface GalleryImage {
   id: string;
-  /** Path under /public. */
+  /**
+   * Path WITHOUT width suffix or extension, e.g. '/images/gallery/pylon-sign-dusk'.
+   * Each entry is pre-encoded as `<src>-<width>.{avif,webp,jpg}` — see the Photo
+   * component for why the format negotiation lives in the markup.
+   */
   src: string;
   /** Required. Describe the frame — this is not optional decoration. */
   alt: string;
   category: GalleryCategory;
-  /** Intrinsic dimensions, so the layout reserves space and never shifts. */
+  /** Intrinsic dimensions of the LARGEST encoded variant. */
   width: number;
   height: number;
+  /** Encoded widths available on disk, ascending. */
+  widths: number[];
   /** Optional visible caption. */
   caption?: string;
 }
 
 /**
- * Empty until authorised photography is available. See the note above.
+ * The published gallery.
+ *
+ * Deliberately curated rather than exhaustive — a short set of strong images
+ * reads as considered; a long set padded with weak ones reads as desperate.
+ * Ordered so the set opens wide (the storefront), moves inside, and closes on
+ * the food.
+ *
+ * NOT included, and these are decisions rather than oversights:
+ *   - The interior renders in resources/renders/ carry a third-party design
+ *     firm's logo, copyright notice and website URL. They are reference only
+ *     and must not be published, cropped around, or retouched to remove it.
+ *   - A "BUT FIRST, COFFEE" typographic poster: generic sentiment, not this
+ *     cafe, and its cup icon is not the brand mark.
+ *   - The botanical pattern sheet: a design asset, not a view of the space —
+ *     and the site already draws that motif as SVG throughout.
+ *   - A photograph of the sign mid-installation: genuinely the real building,
+ *     but it shows scaffolding, a worker and stacked furniture. Lovely for a
+ *     future behind-the-scenes section, wrong for a showcase.
  */
-export const gallery: GalleryImage[] = [];
+export const gallery: GalleryImage[] = [
+  {
+    id: 'storefront-dusk',
+    src: '/images/space/storefront-dusk',
+    alt: "The illuminated storefront sign above an open frontage at dusk, with arched niches, chandeliers and the dessert counter glowing inside",
+    category: 'exterior',
+    width: 1024,
+    height: 1536,
+    widths: [640, 1024],
+    caption: 'The frontage, open to the street',
+  },
+  {
+    id: 'pylon-sign-dusk',
+    src: '/images/gallery/pylon-sign-dusk',
+    alt: 'The freestanding pylon sign lit at dusk beside the glazed frontage, warm light spilling out from the counter inside',
+    category: 'exterior',
+    width: 1200,
+    height: 800,
+    widths: [640, 1200],
+    caption: 'Good Food, Better Moods',
+  },
+  {
+    id: 'blade-sign-dusk',
+    src: '/images/gallery/blade-sign-dusk',
+    alt: 'The circular blade sign mounted on the wall, its gold cup-and-wheat mark glowing against deep maroon',
+    category: 'exterior',
+    width: 1200,
+    height: 800,
+    widths: [640, 1200],
+  },
+  {
+    id: 'arched-niche-seating',
+    src: '/images/gallery/arched-niche-seating',
+    alt: 'A table for two set inside an arched niche, the botanical line-art mural behind it lit by a warm cove light, with the bakery display to one side',
+    category: 'interior',
+    width: 1200,
+    height: 800,
+    widths: [640, 1200],
+    caption: 'A table for two, in the arch',
+  },
+  {
+    id: 'cupcake-selection',
+    src: '/images/gallery/cupcake-selection',
+    alt: 'Four cupcakes on a wooden board — chocolate, strawberry, vanilla with blueberries, and caramel with chopped nuts — beside a cup of black coffee',
+    category: 'food',
+    width: 1024,
+    height: 1536,
+    widths: [640, 1024],
+    caption: 'Finished in small batches',
+  },
+  {
+    id: 'chocolate-layer-cake',
+    src: '/images/gallery/chocolate-layer-cake',
+    alt: 'A chocolate layer cake on a wooden stand with a slice cut away, showing the layers, topped with piped rosettes and a dark chocolate drip',
+    category: 'food',
+    width: 1024,
+    height: 1536,
+    widths: [640, 1024],
+  },
+];
 
 export const isGalleryPending = (): boolean => gallery.length === 0;
 

@@ -1,5 +1,5 @@
 import { ButtonLink } from '@/components/ui/Button';
-import { ArchPanel } from '@/components/ui/ArchPanel';
+import { Photo } from '@/components/ui/Photo';
 import { Section } from '@/components/ui/Section';
 import { copy } from '@/content/copy';
 
@@ -26,10 +26,37 @@ export function Story() {
         </div>
 
         <div className="relative">
-          <ArchPanel
-            label="An arched niche in the cafe, lit from above"
-            className="aspect-[4/5] w-full"
-          />
+          {/*
+            The storefront at dusk, held inside the arch motif.
+
+            The arch is doing real work here, not decoration: the cafe's own
+            interior is built around arched niches, so framing the photograph
+            the same way makes the section feel like part of the building rather
+            than a picture dropped onto a page.
+
+            Cropped from the TOP (`object-top`). The source is 2:3 and the frame
+            is 3:4, so something has to go — and the illuminated sign is the
+            whole point of the shot while the foreground pavement is the least
+            interesting part of it.
+          */}
+          <div className="mask-arch relative overflow-hidden shadow-lift">
+            <Photo
+              src="/images/space/storefront-dusk"
+              alt="The Maven's at dusk — the illuminated storefront sign above an open frontage, with arched niches, chandeliers and the dessert counter glowing inside"
+              width={1024}
+              height={1536}
+              widths={[640, 1024]}
+              sizes="(min-width: 1024px) 36rem, 92vw"
+              className="aspect-[3/4] w-full object-cover object-top"
+            />
+
+            {/* A soft warm floor so the tagline card lands on tone rather than
+                on whatever pixels happen to be underneath it. */}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-espresso/45 to-transparent"
+              aria-hidden="true"
+            />
+          </div>
 
           {/* Overlapping tagline card — a layered detail that keeps the section
               from reading as two plain columns. */}
