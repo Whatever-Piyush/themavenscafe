@@ -43,20 +43,52 @@ export const metadata: Metadata = {
   },
   description: site.description,
   applicationName: site.name,
+  /**
+   * NOTE ON THIS TAG, so nobody later mistakes it for the thing that works:
+   * Google has ignored <meta name="keywords"> as a ranking signal since 2009.
+   * It is kept because it costs nothing and a few smaller engines still read
+   * it — but local ranking comes from the Google Business Profile, reviews,
+   * NAP consistency and the LocalBusiness structured data in
+   * lib/structured-data.ts. Adding terms here will not move a position.
+   *
+   * Terms are grouped by the intent someone actually types.
+   */
   keywords: [
+    // Core intent
     'cafe in Chirawa',
-    'bakery Chirawa',
-    'coffee Chirawa',
-    'desserts Chirawa',
+    'cafe near me Chirawa',
+    'coffee shop in Chirawa',
+    'coffee near me Chirawa',
+
+    // Bakery and dessert intent — a distinct set of searchers
+    'bakery in Chirawa',
+    'cake shop in Chirawa',
+    'birthday cake Chirawa',
+    'desserts in Chirawa',
+    'pastries Chirawa',
+
+    // Landmark and street, which is how people navigate a small town
+    'cafe on Pilani Road Chirawa',
+    'cafe near SBI Bank Chirawa',
+
+    // Wider district — Chirawa sits in Jhunjhunu
+    'cafe in Jhunjhunu',
+    'cafe near Jhunjhunu Rajasthan',
+
+    // What the place is for
     'rooftop cafe Chirawa',
+    'places to hang out in Chirawa',
+    'breakfast in Chirawa',
+
     /**
      * Both spellings on purpose. The brand is set with an apostrophe, but
      * people type it without one — and the domain, Instagram handle and email
      * all use the flat form. Carrying both means a search either way finds us.
      */
     'The Maven’s',
-    'The Mavens Cafe',
-    'The Mavens',
+    'The Maven’s Cafe Chirawa',
+    // The rest of the spellings, kept with the structured data in site.ts.
+    ...site.alternateNames,
   ],
   authors: [{ name: site.name }],
   creator: site.name,
@@ -111,6 +143,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-dvh bg-cream text-espresso antialiased">
         <SkipLink />
+
         <Header />
         <main id="main" tabIndex={-1} className="focus:outline-none">
           {children}

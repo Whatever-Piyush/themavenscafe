@@ -1,3 +1,5 @@
+import { Celebrations } from '@/components/home/Celebrations';
+import { FloatingActions } from '@/components/layout/FloatingActions';
 import { Hero } from '@/components/home/Hero';
 import { MenuPreview } from '@/components/home/MenuPreview';
 import { Pillars } from '@/components/home/Pillars';
@@ -24,8 +26,12 @@ export default function HomePage() {
       <Signatures />
       <MenuPreview />
       <SpacePreview />
+      <Celebrations />
       <Pillars />
       <VisitUs />
+
+      {/* One thumb-tap to message or navigate, at any scroll position. */}
+      <FloatingActions />
     </>
   );
 }

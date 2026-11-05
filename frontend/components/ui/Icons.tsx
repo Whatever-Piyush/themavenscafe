@@ -50,6 +50,44 @@ export function PhoneIcon({ className }: IconProps) {
   );
 }
 
+/**
+ * A wave that flows while `flowing`, and a flat line when not.
+ *
+ * The path runs well past both edges of the viewBox and slides by exactly one
+ * period, so the loop has no visible seam. The mask softens the two points
+ * where it would otherwise be cut off square.
+ */
+export function WaveIcon({ className, flowing }: IconProps & { flowing: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={cn(
+        base,
+        '[mask-image:linear-gradient(to_right,transparent,black_16%,black_84%,transparent)]',
+        className,
+      )}
+      {...stroke}
+    >
+      <path
+        d="M4 12h16"
+        className={cn('transition-opacity duration-500', flowing && 'opacity-0')}
+      />
+      <g
+        className={cn(
+          'origin-center transition-[opacity,scale] duration-500',
+          !flowing && 'scale-y-[0.1] opacity-0',
+        )}
+      >
+        <path
+          d="M-24 12q6-8 12 0t12 0 12 0 12 0"
+          className={cn('animate-wave-flow', !flowing && '[animation-play-state:paused]!')}
+        />
+      </g>
+    </svg>
+  );
+}
+
 export function WhatsAppIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={cn(base, className)} {...stroke}>

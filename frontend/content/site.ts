@@ -73,6 +73,23 @@ export const site = {
    */
   name: 'The Maven’s',
 
+  /**
+   * Other ways people write the name. Given to search engines as
+   * `alternateName`, which is how Google matches a search for "mavens cafe" or
+   * "the maven chirawa" to this site, and which names it can show in results.
+   */
+  alternateNames: [
+    'The Mavens',
+    'The Mavens Cafe',
+    'The Maven’s Cafe',
+    'The Mavens Cafe Chirawa',
+    'The Maven’s Chirawa',
+    'Mavens Cafe',
+    'Mavens Chirawa',
+    'The Maven',
+    'The Maven Cafe Chirawa',
+  ],
+
   /** Hero treatment — the wordmark as it is set on signage. */
   wordmark: 'THE MAVEN’S',
 
@@ -87,6 +104,33 @@ export const site = {
 
   /** The one location fact we have been given. */
   location: 'Chirawa, Rajasthan, India',
+
+  /**
+   * The baking lineage behind the cafe.
+   *
+   * NOTE ON PHRASING, because it matters: the year is attached to PRAGATI
+   * BAKERY, not to the cafe. The cafe itself is new — its signage was being
+   * installed in late 2026. Writing "The Maven's, since 1995" would be a false
+   * claim about the cafe's age; "powered by Pragati Bakery, baking since 1995"
+   * is the true version and is actually the stronger line, because it explains
+   * where thirty years of baking experience comes from.
+   *
+   * If the cafe genuinely has traded under some form since 1995, say so and
+   * this can be reworded.
+   */
+  poweredBy: 'Pragati Bakery',
+  bakingSince: 1995,
+
+  /**
+   * Background music. Replace this file to change the track.
+   *
+   * Currently Chopin, Nocturne Op. 9 No. 2, performed by Peter Johnston, via
+   * Musopen. CC0 on Wikimedia Commons, so no credit or fee is owed. An old
+   * composition is not enough on its own: the recording has its own copyright,
+   * so check the licence of the recording before swapping this.
+   * https://commons.wikimedia.org/wiki/File:Chopin_Nocturne_No._2_in_E_Flat_Major,_Op._9.ogg
+   */
+  music: '/audio/cafe-ambient.mp3',
 
   /**
    * Canonical site URL — used for metadataBase, Open Graph, canonical links,
@@ -160,7 +204,34 @@ export const site = {
 
     /** Official domain. Displayed as a contact detail. */
     website: 'themavenscafe.in' as string | Pending,
+
+    /**
+     * Google Maps EMBED url for the contact page map.
+     *
+     * The `output=embed` form needs no API key and no billing account, which
+     * suits a zero-cost build. Replace the query with the Google Business
+     * Profile place once that exists — an embed pinned to the business itself
+     * beats one pinned to a street.
+     */
+    mapsEmbed:
+      'https://www.google.com/maps?q=The+Mavens+Cafe%2C+Near+SBI+Bank%2C+Pilani+Road%2C+Chirawa%2C+Rajasthan&output=embed' as
+        | string
+        | Pending,
   },
+
+  /**
+   * Verified latitude/longitude, for schema.org `geo`.
+   *
+   * Left pending ON PURPOSE. Coordinates are the one field where a plausible
+   * guess is worse than nothing: a wrong pin sends people to the wrong street
+   * and search engines treat it as a contradiction of the address. Take the
+   * exact values from the Google Business Profile listing once it exists
+   * (right-click the pin in Maps, the lat/lng is the first item) and fill them
+   * in here — the structured data starts emitting `geo` automatically.
+   *
+   *   geo: { lat: 28.2406, lng: 75.6386 }
+   */
+  geo: pending() as { lat: number; lng: number } | Pending,
 
   /**
    * Opening hours, in 24-hour time.
@@ -191,6 +262,16 @@ export const site = {
     { label: 'Visit', href: '/contact' },
   ],
 } as const;
+
+/**
+ * The lineage line, in one place so it reads identically everywhere.
+ *
+ * Deliberately NOT "The Maven's since 1995" — the year belongs to the bakery,
+ * not the cafe. See the note on `poweredBy` in the config above.
+ */
+export function heritageLine(): string {
+  return `Powered by ${site.poweredBy} · Baking since ${site.bakingSince}`;
+}
 
 /** Formats '09:00' as '9:00 am'. */
 export function formatTime(time24: string): string {

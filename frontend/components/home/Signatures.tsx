@@ -89,9 +89,10 @@ function CraftPillars() {
         ))}
       </ul>
 
-      <div className="mt-14 flex flex-col items-center gap-5 text-center">
+      {/* A quiet sign-off. The way into the menu is the next section, which
+          ends on its own "See the full menu", so none is repeated here. */}
+      <div className="mt-14 flex justify-center">
         <CupMark className="h-10 text-maroon/35" />
-        <p className="max-w-md text-sm text-ink-muted">{copy.home.menuPreview.leadPending}</p>
       </div>
     </Section>
   );

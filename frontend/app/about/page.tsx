@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { ArchPanel } from '@/components/ui/ArchPanel';
 import { ButtonLink } from '@/components/ui/Button';
+import { Photo } from '@/components/ui/Photo';
 import { Section } from '@/components/ui/Section';
 import { copy } from '@/content/copy';
 import { site } from '@/content/site';
@@ -31,7 +31,17 @@ export default function AboutPage() {
           </div>
 
           <aside className="lg:pt-4">
-            <ArchPanel label="An arched niche with botanical line work" className="aspect-[3/4] w-full" />
+            <div className="mask-arch overflow-hidden shadow-lift">
+              <Photo
+                src="/images/gallery/night-facade"
+                alt="The Maven's at night — the lit signboard, the round wall sign and a balloon arch framing the glass frontage"
+                width={1024}
+                height={1365}
+                widths={[640, 1024]}
+                sizes="(min-width: 1024px) 24rem, 92vw"
+                className="aspect-[3/4] w-full object-cover"
+              />
+            </div>
 
             <div className="mt-10 rounded-2xl border border-sand bg-cream-deep/40 p-7">
               <p className="eyebrow text-maroon/60">Our standard</p>

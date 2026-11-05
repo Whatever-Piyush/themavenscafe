@@ -22,7 +22,9 @@ export function VisitUs() {
         <div>
           <ContactDetails />
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          {/* Centred while the details stack above the map; beside the map they
+              line up with the details column. */}
+          <div className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
             <ButtonLink href="/contact" variant="primary">
               Visit us
             </ButtonLink>

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { InstagramIcon, MailIcon, PhoneIcon, WhatsAppIcon } from '@/components/ui/Icons';
-import { formatTime, formattedAddress, hoursSummary, resolve, site } from '@/content/site';
+import { formatTime, formattedAddress, heritageLine, hoursSummary, resolve, site } from '@/content/site';
 
 /**
  * Footer — maroon, bookending the maroon hero.
@@ -44,6 +44,7 @@ export function Footer() {
             <Wordmark tone="cream" />
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-cream-muted">{site.description}</p>
             <p className="font-script mt-6 text-2xl text-gold">{site.tagline}</p>
+            <p className="eyebrow mt-5 text-cream/55">{heritageLine()}</p>
           </div>
 
           {/* Find us */}

@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   const hasDetails = hasAnyContactDetail();
   const maps = resolve(site.contact.maps);
+  const mapsEmbed = resolve(site.contact.mapsEmbed);
 
   return (
     <>
@@ -53,23 +54,40 @@ export default function ContactPage() {
           </div>
 
           {/*
-            Map panel.
+            The map.
 
-            No embed while the street address is unknown. Guessing coordinates
-            for a real business would send real customers somewhere wrong.
+            Uses Google's keyless `output=embed` form — no API key, no billing
+            account, which keeps the zero-cost constraint intact. It is pinned
+            by ADDRESS rather than coordinates, because no verified coordinates
+            exist yet and a guessed pin sends people to the wrong street.
+
+            `loading="lazy"` matters here: this is the one third-party frame on
+            the site, and it should not compete with the page's own content for
+            bandwidth on a phone. The CSP in netlify.toml allows exactly these
+            two Google hosts in `frame-src` and nothing else.
           */}
-          <div className="mask-arch relative flex min-h-[380px] flex-col items-center justify-center overflow-hidden border border-sand bg-cream-deep p-10 text-center">
-            <BotanicalMotif className="pointer-events-none absolute -bottom-12 -right-10 h-64 w-auto text-maroon/[0.06]" />
-
-            <div className="relative">
-              <MapPinIcon className="mx-auto h-10 w-10 text-maroon/40" />
-              <p className="eyebrow mt-5 text-maroon/60">{site.location}</p>
-              <p className="mx-auto mt-4 max-w-xs text-sm leading-relaxed text-ink-muted">
-                {maps
-                  ? 'Open the map for directions.'
-                  : 'Our exact address and map will appear here once confirmed.'}
-              </p>
-            </div>
+          <div className="mask-arch relative min-h-[380px] overflow-hidden border border-sand bg-cream-deep">
+            {mapsEmbed ? (
+              <iframe
+                src={mapsEmbed}
+                title={`Map showing ${site.name} in ${site.location}`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full border-0"
+              />
+            ) : (
+              <div className="flex h-full min-h-[380px] flex-col items-center justify-center p-10 text-center">
+                <BotanicalMotif className="pointer-events-none absolute -bottom-12 -right-10 h-64 w-auto text-maroon/[0.06]" />
+                <div className="relative">
+                  <MapPinIcon className="mx-auto h-10 w-10 text-maroon/40" />
+                  <p className="eyebrow mt-5 text-maroon/60">{site.location}</p>
+                  <p className="mx-auto mt-4 max-w-xs text-sm leading-relaxed text-ink-muted">
+                    Our exact address and map will appear here once confirmed.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Section>

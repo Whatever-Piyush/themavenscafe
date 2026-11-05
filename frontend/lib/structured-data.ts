@@ -38,6 +38,7 @@ export function cafeSchema(): Record<string, unknown> {
     '@type': 'CafeOrCoffeeShop',
     '@id': `${site.url}/#cafe`,
     name: site.name,
+    alternateName: site.alternateNames,
     description: site.description,
     url: site.url,
     servesCuisine: ['Coffee', 'Bakery', 'Desserts'],
@@ -57,6 +58,37 @@ export function cafeSchema(): Record<string, unknown> {
 
   if (phone) schema.telephone = phone;
   if (email) schema.email = email;
+
+  /**
+   * `additionalType` lets one listing claim two categories. Searches for a
+   * bakery and searches for a cafe are different intents in a small town, and
+   * this place genuinely is both — so it should be eligible for both.
+   */
+  schema.additionalType = ['https://schema.org/Bakery', 'https://schema.org/DessertShop'];
+
+  /**
+   * Where customers actually come from. Chirawa sits in Jhunjhunu district, and
+   * people search at both levels.
+   */
+  schema.areaServed = [
+    { '@type': 'City', name: 'Chirawa' },
+    { '@type': 'AdministrativeArea', name: 'Jhunjhunu district, Rajasthan' },
+  ];
+
+  /**
+   * An image is close to required for a rich result — Google will often decline
+   * to show one without it. The storefront is the strongest frame we have.
+   */
+  schema.image = [`${site.url}/images/space/storefront-dusk-1024.jpg`];
+
+  /**
+   * Coordinates, only if verified. Never guessed: a wrong pin sends people to
+   * the wrong street, and search engines read it as contradicting the address.
+   */
+  if (!isPending(site.geo)) {
+    const { lat, lng } = site.geo as { lat: number; lng: number };
+    schema.geo = { '@type': 'GeoCoordinates', latitude: lat, longitude: lng };
+  }
 
   /**
    * sameAs links the website to the same business elsewhere on the web, which
@@ -102,10 +134,13 @@ export function cafeSchema(): Record<string, unknown> {
   /**
    * Deliberately absent until real data exists:
    *   priceRange        — unknown until the menu is priced
-   *   geo               — no verified coordinates
    *   aggregateRating   — no genuine reviews; fabricating one is a violation
+   *                       of Google's policy and can suppress rich results
+   *                       for the whole site
    *   review            — same
-   *   hasMenu           — added once the menu is populated
+   *   hasMenu           — added once content/menu.ts is populated
+   *
+   * (`geo` is emitted above, but only once real coordinates are set.)
    */
   return schema;
 }
@@ -116,6 +151,7 @@ export function websiteSchema(): Record<string, unknown> {
     '@type': 'WebSite',
     '@id': `${site.url}/#website`,
     name: site.name,
+    alternateName: site.alternateNames,
     url: site.url,
     inLanguage: 'en-IN',
     publisher: { '@id': `${site.url}/#cafe` },

@@ -145,7 +145,10 @@ export function GalleryGrid() {
               </button>
 
               {image.caption && (
-                <figcaption className="mt-3 text-sm text-ink-muted">{image.caption}</figcaption>
+                <figcaption className="mt-3">
+                  <span className="block font-display text-lg text-espresso">{image.caption}</span>
+                  {image.note && <span className="mt-0.5 block text-sm text-ink-muted">{image.note}</span>}
+                </figcaption>
               )}
             </figure>
           </li>
@@ -182,7 +185,7 @@ export function GalleryGrid() {
               className="max-h-[78vh] w-auto rounded-xl object-contain"
             />
             <figcaption className="mt-4 text-center text-sm text-cream-muted">
-              {active.caption ?? active.alt}
+              {active.caption ? (active.note ? `${active.caption} — ${active.note}` : active.caption) : active.alt}
             </figcaption>
           </figure>
 
@@ -219,7 +222,8 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'rounded-full border px-5 py-2 text-sm transition-colors',
+        // min-h-11 keeps the chip a 44px tap target on a phone.
+        'inline-flex min-h-11 items-center rounded-full border px-5 text-sm transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
         active
           ? 'border-maroon bg-maroon text-cream'

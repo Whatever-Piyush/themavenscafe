@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MenuItemCard } from './MenuItemCard';
+import { MenuItemCard, PriceColumnHeads, priceColumns } from './MenuItemCard';
 import { SearchIcon } from '@/components/ui/Icons';
 import { copy } from '@/content/copy';
 import { menu, type MenuCategory } from '@/content/menu';
@@ -87,21 +87,28 @@ export function MenuBrowser() {
         <p className="py-16 text-center text-ink-muted">{copy.menu.noResults}</p>
       ) : (
         <div className="space-y-16">
-          {visible.map((category) => (
-            <section key={category.id} id={category.id} className="scroll-mt-40">
-              <div className="mb-6">
-                <h2 className="font-display text-2xl text-espresso sm:text-3xl">{category.name}</h2>
-                {category.tagline && <p className="mt-2 text-sm text-ink-muted">{category.tagline}</p>}
-                <div className="mt-5 h-px w-16 bg-gold/50" />
-              </div>
+          {visible.map((category) => {
+            // From the whole category, not the search results, so the columns
+            // stay put while searching.
+            const columns = priceColumns(menu.find((full) => full.id === category.id)?.items ?? category.items);
+            return (
+              <section key={category.id} id={category.id} className="scroll-mt-40">
+                <div className="mb-6">
+                  <h2 className="font-display text-2xl text-espresso sm:text-3xl">{category.name}</h2>
+                  {category.tagline && <p className="mt-2 text-sm text-ink-muted">{category.tagline}</p>}
+                  <div className="mt-5 h-px w-16 bg-gold/50" />
+                </div>
 
-              <div>
-                {category.items.map((item) => (
-                  <MenuItemCard key={item.id} item={item} />
-                ))}
-              </div>
-            </section>
-          ))}
+                {columns && <PriceColumnHeads labels={columns} />}
+
+                <div>
+                  {category.items.map((item) => (
+                    <MenuItemCard key={item.id} item={item} columns={columns} />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
     </div>
@@ -123,7 +130,8 @@ function CategoryChip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'shrink-0 whitespace-nowrap rounded-full border px-5 py-2 text-sm transition-colors',
+        // min-h-11 keeps the chip a 44px tap target on a phone.
+        'inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border px-5 text-sm transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
         active
           ? 'border-maroon bg-maroon text-cream'

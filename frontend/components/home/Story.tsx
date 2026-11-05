@@ -28,7 +28,9 @@ export function Story() {
             ))}
           </div>
 
-          <div className="mt-10">
+          {/* Centred while the story stacks above the photo; beside the photo
+              it lines up with the text column. */}
+          <div className="mt-10 flex justify-center lg:justify-start">
             <ButtonLink href="/about" variant="secondary">
               {copy.home.story.cta}
             </ButtonLink>

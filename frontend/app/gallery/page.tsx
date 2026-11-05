@@ -10,7 +10,7 @@ import { isGalleryPending, spaces } from '@/content/gallery';
 export const metadata: Metadata = {
   title: 'The Space',
   description:
-    'Three floors in Chirawa — a ground-floor counter, a quiet first-floor room, and a rooftop terrace open to the sky.',
+    'The Maven’s in Chirawa — a ground-floor counter and dessert display, the kitchen above it, and a rooftop terrace to come.',
   alternates: { canonical: '/gallery' },
 };
 
@@ -36,11 +36,18 @@ export default function GalleryPage() {
                 <article key={space.name}>
                   <ArchPanel
                     label={space.imageIntent}
-                    tone={space.feature ? 'maroon' : 'sand'}
+                    tone={space.upcoming ? 'maroon' : 'sand'}
                     className="aspect-[4/5] w-full"
                   />
                   <div className="mt-6">
-                    <p className="eyebrow text-maroon/60">{space.floor}</p>
+                    <p className="eyebrow flex items-center gap-2.5 text-maroon/60">
+                      {space.floor}
+                      {space.upcoming && (
+                        <span className="rounded-full bg-maroon px-2.5 py-0.5 text-[0.6rem] tracking-wider text-cream">
+                          Coming soon
+                        </span>
+                      )}
+                    </p>
                     <h2 className="mt-2 font-display text-xl text-espresso">{space.name}</h2>
                     <p className="mt-2 text-sm leading-relaxed text-ink-muted">{space.copy}</p>
                   </div>

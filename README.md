@@ -31,7 +31,7 @@ A statically generated Next.js site with six pages and one health endpoint. That
 | Framework | Next.js (App Router), React, TypeScript `strict` |
 | Styling | Tailwind CSS v4 + CSS custom properties |
 | Fonts | Playfair Display, Inter, Great Vibes — self-hosted at build time |
-| Hosting | Vercel |
+| Hosting | Netlify (static export) |
 | Database | None |
 | External services | **None** |
 | Required env vars | **None** |
@@ -53,7 +53,7 @@ the-mavens-cafe/
 │   ├── hooks/ lib/      scroll state, class helper, JSON-LD
 │   ├── styles/          globals.css — design tokens live here
 │   ├── public/images/   site imagery
-│   └── next.config.ts   security headers
+│   └── next.config.ts   static export + image config
 │
 ├── backend/             server-side logic — no React, no Next.js
 │   └── api/health.ts    the only server logic in V1
@@ -84,7 +84,7 @@ Everything a non-developer needs is in four files. No JSX hunting.
 
 ### Contact details
 
-Every contact field is currently `pending()`, which renders as "Coming soon" everywhere and is automatically excluded from search-engine structured data. To go live, replace the value:
+Contact details are live. Any field left as `pending()` renders as "Coming soon" and is automatically excluded from the structured data, so partial information is always safe:
 
 ```ts
 phone: pending()              →   phone: '+91 00000 00000',
@@ -112,14 +112,13 @@ Listed so these read as decisions rather than omissions:
 - **No analytics, cookies, or tracking.** Hence no cookie banner — there is nothing to consent to.
 - **No testimonials section.** No real customer quotes exist, and inventing reviews for a real business is not on the table.
 - **No menu items or prices.** The real menu has not been supplied. The provisional items visible in the architectural renders are not the published menu.
-- **No street address, phone, hours or coordinates.** Not supplied, so not invented. A wrong address sends real customers to the wrong door.
-- **No gallery photography.** See below.
+- **No verified coordinates.** The address, phone, email and hours are now live; latitude/longitude is still `pending()` in `content/site.ts`, because a guessed pin sends people to the wrong street.
 
 ### Image rights
 
-The architectural renders in `resources/` carry a third-party design firm's watermark and copyright notice. They are **not** published on the site, and must not be published by cropping, erasing or regenerating the watermark away. They are design reference only, and `resources/` is excluded from deployment via `.vercelignore`.
+The architectural renders in `resources/` carry a third-party design firm's watermark and copyright notice. They are **not** published on the site, and must not be published by cropping, erasing or regenerating the watermark away. They are design reference only, and `resources/` is excluded from deployment via `.vercelignore`, and from the repository via `.gitignore`.
 
-Until clean, authorised photography exists, the gallery renders an art-directed treatment built from the brand's own visual language. The page looks finished; it simply does not claim to show photographs we do not have the rights to.
+The gallery now publishes six authorised images — the storefront, signage, the arched niche and two food shots — none of which carry third-party marks. The watermarked renders remain excluded.
 
 ---
 
@@ -138,7 +137,7 @@ The security model is attack-surface minimisation, which for a brochure site is 
 - Statically generated pages served from CDN
 - One `GET` health endpoint, which reports only `{status, timestamp}` — no versions, no dependency list, nothing that aids reconnaissance
 
-**Security headers** are set in `frontend/next.config.ts`: Content-Security-Policy, `X-Content-Type-Options`, `X-Frame-Options` + `frame-ancestors 'none'`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, and HSTS in production only.
+**Security headers** are set in `netlify.toml` (they cannot be set from `next.config.ts` under `output: 'export'` — there is no server to attach them to): Content-Security-Policy, `X-Content-Type-Options`, `X-Frame-Options` + `frame-ancestors 'none'`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, and HSTS in production only.
 
 **Known CSP limitation, stated plainly:** `script-src` includes `'unsafe-inline'`. Next.js inlines hydration data, and the strict alternative — a per-request nonce with `strict-dynamic` — forces every page to render dynamically, trading away the static delivery that makes this site fast and free to run. The trade is acceptable *here specifically* because there is no database, no user input and no user-generated content, so there is no mechanism by which injected script could reach a page. **It is not a general-purpose excuse: the moment this site renders anything a user supplied, that line is the first thing to revisit.**
 
@@ -146,21 +145,66 @@ The security model is attack-surface minimisation, which for a brochure site is 
 
 ---
 
-## Deploying to Vercel
+## Deploying
 
-1. Push the repository to GitHub.
-2. In Vercel, **Add New → Project**, and import the repository.
-3. Vercel detects Next.js automatically. Leave the build settings as they are — `vercel.json` handles the workspace layout.
-4. Add no environment variables. There are none.
-5. **Deploy.**
+Netlify builds this from the repository root — see `netlify.toml`, which holds
+the build settings and all the security headers.
 
-You get `https://<project>.vercel.app` with HTTPS, a global CDN and automatic preview deployments on every pull request — at no cost.
+| Setting | Value |
+|---|---|
+| Base directory | *(repository root — leave blank)* |
+| Build command | `npm run build` |
+| Publish directory | `frontend/out` |
 
-Verify the deploy with `curl https://<your-domain>/api/health` → `{"status":"ok", ...}`.
+Base is the root, not `frontend/`, because this is an npm workspaces monorepo:
+the lockfile lives at the root and `frontend` depends on `@mavens/backend`,
+which resolves only through the workspace. Pointing base at `frontend/` fails
+with `404 '@mavens/backend@*' is not in this registry`.
 
-A custom domain is the only thing in this project that could ever cost money (roughly ₹1,000/year). It is entirely optional; attaching one to Vercel is free.
+No environment variables are required. `NEXT_PUBLIC_SITE_URL` is optional —
+Netlify's own `URL` is used automatically, so canonicals and the sitemap are
+correct with no configuration. Set it explicitly once a custom domain is live.
+
+A custom domain is the only thing here that could ever cost money (roughly
+₹1,000/year). Attaching one to Netlify is free.
+
+`vercel.json` is kept so a Vercel deploy still works, but Netlify is the live
+target.
 
 ---
+
+---
+
+## Getting found locally
+
+The code side is done: `LocalBusiness` structured data with the real address,
+phone, email, hours, categories and service area; location-bearing titles and
+meta descriptions; a sitemap; and a Google Maps embed on the contact page.
+
+**But the website is not the main lever, and it is worth being blunt about
+that.** For "cafe near me" and similar searches, the three results shown above
+the map — the map pack — are drawn almost entirely from a **Google Business
+Profile**, not from a website. Without one, this cafe cannot appear there at
+all, no matter what the site does.
+
+In rough order of impact:
+
+| | Action | Where |
+|---|---|---|
+| 1 | **Create the Google Business Profile.** Free. Category "Cafe", secondary "Bakery". Add the real photos, hours and phone. | business.google.com |
+| 2 | **Get reviews on it**, and reply to them. Volume and recency both count. | — |
+| 3 | **Keep name, address and phone identical** everywhere online — site, GBP, Instagram, directories. Mismatches split the ranking signal. | — |
+| 4 | **Verify the site** and submit the sitemap. | Google Search Console |
+| 5 | **Add the verified coordinates** to `geo` in `content/site.ts`. Take them from the GBP pin; the structured data starts emitting `geo` on its own. | code |
+| 6 | **Swap the Maps links to the GBP place link** once it exists — `maps` and `mapsEmbed` in `content/site.ts`. A pin on the business beats a pin on a street. | code |
+
+### On `<meta name="keywords">`
+
+The tag is populated with 20 terms grouped by search intent, because it costs
+nothing and a few smaller engines still read it. **Google has ignored it as a
+ranking signal since 2009.** Adding terms there will not move a position — the
+list is documentation of intent, not optimisation. Real on-page relevance comes
+from the titles, headings and body copy, which already name Chirawa throughout.
 
 ## Upgrade path
 

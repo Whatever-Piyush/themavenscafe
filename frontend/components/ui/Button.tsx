@@ -1,14 +1,52 @@
 import Link from 'next/link';
 import { cn } from '@/lib/cn';
+import {
+  liquidPrimaryDark,
+  liquidPrimaryLight,
+  liquidSecondaryDark,
+  liquidSecondaryLight,
+} from './liquid-glass-button';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'onMaroon' | 'onMaroonGhost';
+/**
+ * The existing variant names now map onto the liquid-glass recipes, so all 16
+ * call sites pick up the new look without 16 separate edits — and the
+ * primary/secondary hierarchy they already encoded is preserved rather than
+ * flattened into one uniform glass.
+ *
+ *   primary        maroon glass, cream label   (prominent, on cream)
+ *   secondary      cream glass, maroon label   (quiet, on cream)
+ *   glass          maroon glass, cream label   (the header's CTA)
+ *   onMaroon       brighter cream glass        (prominent, on maroon)
+ *   onMaroonGhost  fainter cream glass         (quiet, on maroon)
+ *
+ * `solidMaroon` is kept for anything that must read as a hard, opaque control
+ * rather than glass.
+ */
+type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'onMaroon'
+  | 'onMaroonGhost'
+  | 'glass'
+  | 'solidMaroon';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-maroon text-cream hover:bg-maroon-soft active:bg-maroon-deep shadow-soft hover:shadow-lift',
-  secondary: 'bg-transparent text-maroon border border-maroon/30 hover:border-maroon hover:bg-maroon/5',
+  // ── On a CREAM surface ──
+  primary: liquidPrimaryLight,
+  secondary: liquidSecondaryLight,
+  // The header bar is pale glass, so its CTA needs the dark-on-light treatment
+  // to stay prominent — cream-on-cream would vanish.
+  glass: liquidPrimaryLight,
+
+  // ── On a MAROON surface ──
+  onMaroon: liquidPrimaryDark,
+  onMaroonGhost: liquidSecondaryDark,
+
+  solidMaroon:
+    'bg-maroon text-cream hover:bg-maroon-soft active:bg-maroon-deep shadow-soft hover:shadow-lift',
+
   ghost: 'bg-transparent text-espresso hover:text-maroon',
-  onMaroon: 'bg-cream text-maroon hover:bg-gold hover:text-espresso shadow-soft',
-  onMaroonGhost: 'bg-transparent text-cream border border-cream/35 hover:border-gold hover:text-gold',
 };
 
 const BASE =
@@ -42,14 +80,14 @@ export function ButtonLink({ href, children, variant = 'primary', className, onC
         // originating URL. Both, always, on every external link.
         {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       >
-        {children}
+        <span className="relative z-10 inline-flex items-center gap-2">{children}</span>
       </a>
     );
   }
 
   return (
     <Link href={href} onClick={onClick} className={cn(BASE, VARIANTS[variant], className)}>
-      {children}
+      <span className="relative z-10 inline-flex items-center gap-2">{children}</span>
     </Link>
   );
 }
@@ -62,7 +100,7 @@ export function Button({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
   return (
     <button className={cn(BASE, VARIANTS[variant], className)} {...props}>
-      {children}
+      <span className="relative z-10 inline-flex items-center gap-2">{children}</span>
     </button>
   );
 }

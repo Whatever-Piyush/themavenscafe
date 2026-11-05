@@ -56,3 +56,7 @@ next-env.d.ts
 # files stay on the local machine; .vercelignore separately keeps them out of
 # any deployment.
 resources/
+
+# Calendar invites saved alongside the photos. Personal, and nothing to do
+# with the site.
+*.ics

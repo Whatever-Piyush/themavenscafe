@@ -27,6 +27,18 @@
   # Next 16 requires Node >= 20.9; 22 is the current LTS.
   NODE_VERSION = "22"
 
+# The address search engines are told is the real one: canonical links,
+# og:url, sitemap.xml, robots.txt and the structured data all read it.
+#
+# Without this the build falls back to Netlify's URL variable, which is the
+# netlify.app address, and every page told Google its home was
+# themavenscafe.netlify.app rather than the domain.
+#
+# Production only. Deploy previews keep their own address and are kept out of
+# the index by robots.ts.
+[context.production.environment]
+  NEXT_PUBLIC_SITE_URL = "https://themavenscafe.in"
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  SECURITY HEADERS
@@ -49,7 +61,7 @@
     # tooling. That conditional still exists for `next dev`, which serves its
     # own headers locally; a static host has no notion of a dev build, so only
     # the hardened policy ships. This is strictly an improvement.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; frame-src https://www.google.com https://maps.google.com; base-uri 'self'; form-action 'self'; object-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
 
     # Stops the browser second-guessing our Content-Type.
     X-Content-Type-Options = "nosniff"
@@ -90,13 +102,21 @@
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  NO REDIRECT RULES
+#  REDIRECTS
 #
-#  Deliberately none. A catch-all SPA rewrite (/* -> /index.html) is the usual
-#  reflex for static hosts, and it would be wrong here: this is a
-#  multi-page export where every route is a real HTML file, and a catch-all
-#  would serve the home page for genuine 404s — breaking Next's 404.html and
-#  telling search engines that every mistyped URL is valid content.
+#  One only: the netlify.app address forwards to the domain, page for page, so
+#  search engines see one site rather than two copies competing for the same
+#  searches. Deploy previews live on other netlify.app hostnames and are not
+#  affected.
 #
-#  Netlify serves out/404.html for unmatched paths automatically.
+#  Deliberately no catch-all SPA rewrite (/* -> /index.html), the usual reflex
+#  for static hosts. This is a multi-page export where every route is a real
+#  HTML file, and a catch-all would serve the home page for genuine 404s —
+#  breaking Next's 404.html and telling search engines that every mistyped URL
+#  is valid content. Netlify serves out/404.html for unmatched paths.
 # ─────────────────────────────────────────────────────────────────────────────
+[[redirects]]
+  from   = "https://themavenscafe.netlify.app/*"
+  to     = "https://themavenscafe.in/:splat"
+  status = 301
+  force  = true
